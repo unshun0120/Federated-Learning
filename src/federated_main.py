@@ -101,7 +101,7 @@ if __name__ == '__main__':
             # 改成用 '=', global model和model的addr會相同，改的時候會一起改
             # w, loss = local_model.update_weights(
                 # model=global_model, global_round=epoch)
-        
+
             local_weights.append(copy.deepcopy(w))
             local_losses.append(copy.deepcopy(loss))
 
@@ -116,6 +116,8 @@ if __name__ == '__main__':
 
         # Calculate avg training accuracy over all users at every epoch
         list_acc, list_loss = [], []
+        # eval() : do not enable batch normalization and dropout
+        # 在輸入時若不做訓練仍然會改變權重, 這是因為model中有BN和dropout layer, eval()時會把BN跟dropout固定住
         global_model.eval()
         for c in range(args.num_users):
             local_model = LocalUpdate(args=args, dataset=train_dataset,
@@ -151,7 +153,6 @@ if __name__ == '__main__':
     # PLOTTING (optional)
     import matplotlib
     import matplotlib.pyplot as plt
-    matplotlib.use('Agg')
 
     # Plot Loss curve
     plt.figure()

@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     # Set the model to train and send it to device(cpu or gpu).
     global_model.to(device)
-    # the model is in training mode
+    # the model is in training mode, enable batch normalization and dropout
     global_model.train()
     print(global_model)
 

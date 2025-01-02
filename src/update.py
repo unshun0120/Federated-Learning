@@ -88,7 +88,8 @@ class LocalUpdate(object):
         return model.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
     def inference(self, model):
-        """ Returns the inference accuracy and loss.
+        """ 
+        Returns the inference accuracy and loss.
         """
 
         model.eval()

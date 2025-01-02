@@ -83,10 +83,13 @@ def average_weights(w):
     Returns the average of the weights.
     """
     w_avg = copy.deepcopy(w[0])
-    for key in w_avg.keys():
-        for i in range(1, len(w)):
-            w_avg[key] += w[i][key]
-        w_avg[key] = torch.div(w_avg[key], len(w))
+    # k (string) = conv1.weight, conv1.bias, conv2.weight...
+    # i = i-th edge device
+    # 把第k個layer中餒個device的weight加起來
+    for k in w_avg.keys():  
+        for i in range(1, len(w)):  
+            w_avg[k] += w[i][k]
+        w_avg[k] = torch.div(w_avg[k], len(w))
     return w_avg
 
 
