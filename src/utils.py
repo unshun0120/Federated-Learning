@@ -17,10 +17,16 @@ def get_dataset(args):
 
     if args.dataset == 'cifar':
         data_dir = '../data/cifar/'
+        # Composes several transforms together
+        # ToTensor() : 將shape為(H, W, C)的numpy array or image轉成(C, H, W)的tensor，並把每個值normalize到[0, 1], normalize方式 : 把每個值除以255
+        # Normalize() : 將輸入normalize到[0, 1]，再用公式(x-mean)/std，把每個元素分布到[-1, 1]
         apply_transform = transforms.Compose(
             [transforms.ToTensor(),
-             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-
+             transforms.Normalize(std=(0.5, 0.5, 0.5),mean=(0.5, 0.5, 0.5))])
+        # dataset.CIFAR10(root, train, transform, download) 
+        # root : "where directory cifar-10 exists or will be saved to", 
+        # train : "If True, creates dataset from training set, otherwise creates from test set", 
+        # download : "If true, downloads the dataset from the internet and puts it in root directory"
         train_dataset = datasets.CIFAR10(data_dir, train=True, download=True,
                                        transform=apply_transform)
 
