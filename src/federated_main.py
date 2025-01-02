@@ -11,7 +11,7 @@ import numpy as np
 from tqdm import tqdm
 
 import torch
-#from tensorboardX import SummaryWriter
+# from tensorboardX import SummaryWriter #參考連結的作者原本用的
 from torch.utils.tensorboard import SummaryWriter
 
 from options import args_parser
@@ -21,10 +21,13 @@ from utils import get_dataset, average_weights, exp_details
 
 
 if __name__ == '__main__':
+    # use to measure total running time
     start_time = time.time()
 
     # define paths
     path_project = os.path.abspath('..')
+    # SummaryWriter : create an event file in a given directory and add summaries and events to it
+    # log file / event file : typically used by software or operating systems to keep track of certain events that occur
     logger = SummaryWriter('../logs')
 
     args = args_parser()
@@ -64,6 +67,7 @@ if __name__ == '__main__':
     print(global_model)
 
     # copy weights
+    # state_dict() : a Python dictionary object that maps each layer to its parameter tensor.
     global_weights = global_model.state_dict()
 
     # Training
@@ -78,14 +82,26 @@ if __name__ == '__main__':
         print(f'\n | Global Training Round : {epoch+1} |\n')
 
         global_model.train()
+        """
+        in ref. paper : At the beginning of each round, a random fraction of clients is selected, and the server 
+        sends the current global algorithm state to each of these clients (e.g., the current model parameters). 
+        We only select a fraction of clients for efficiency
+        計算 m = frac*user, 從所有的user中random挑出m個user
+        """
         m = max(int(args.frac * args.num_users), 1)
         idxs_users = np.random.choice(range(args.num_users), m, replace=False)
 
         for idx in idxs_users:
             local_model = LocalUpdate(args=args, dataset=train_dataset,
                                       idxs=user_groups[idx], logger=logger)
+            # copy.deepcopy() : 完全複製了一份副本，容器與容器中的元素地址都不一樣，Modify the deep copied object do not affect the original object
+            # copy.copy() : shallow copy, If you modify a the shallow copied object, the change will reflect in the original object because they share the same reference
             w, loss = local_model.update_weights(
                 model=copy.deepcopy(global_model), global_round=epoch)
+            # 改成用 '=', global model和model的addr會相同，改的時候會一起改
+            # w, loss = local_model.update_weights(
+                # model=global_model, global_round=epoch)
+        
             local_weights.append(copy.deepcopy(w))
             local_losses.append(copy.deepcopy(loss))
 

@@ -8,7 +8,8 @@ from torch.utils.data import DataLoader, Dataset
 
 
 class DatasetSplit(Dataset):
-    """An abstract Dataset class wrapped around Pytorch Dataset class.
+    """
+    An abstract Dataset class wrapped around Pytorch Dataset class.
     """
 
     def __init__(self, dataset, idxs):
@@ -17,7 +18,7 @@ class DatasetSplit(Dataset):
 
     def __len__(self):
         return len(self.idxs)
-
+    # 只要call DatasetSplit()就會去call __getitem__(), e.g. idxs_train是list, idx=0時會call DatasetSplit然後return dataset[0]的三個東西(作者function define), 依此類推
     def __getitem__(self, item):
         image, label = self.dataset[self.idxs[item]]
         return torch.tensor(image), torch.tensor(label)
@@ -76,8 +77,8 @@ class LocalUpdate(object):
                 optimizer.step()
 
                 if self.args.verbose and (batch_idx % 10 == 0):
-                    print('| Global Round : {} | Local Epoch : {} | [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                        global_round, iter, batch_idx * len(images),
+                    print('| Global Round : {} | Local Epoch : {} | Batch Index : {} | [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                        global_round, iter, batch_idx, batch_idx * len(images),
                         len(self.trainloader.dataset),
                         100. * batch_idx / len(self.trainloader), loss.item()))
                 self.logger.add_scalar('loss', loss.item())
